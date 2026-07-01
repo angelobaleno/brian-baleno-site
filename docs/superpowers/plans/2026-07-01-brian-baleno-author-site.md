@@ -94,6 +94,7 @@ node_modules/
 dist/
 .astro/
 .netlify/
+.superpowers/
 .DS_Store
 ```
 
