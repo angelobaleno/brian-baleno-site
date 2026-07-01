@@ -1,0 +1,79 @@
+---
+import { site } from '../data/site.ts';
+const formName = site.contactFormName;
+---
+<section class="section contact" id="contact">
+  <div class="container contact__inner">
+    <p class="kicker" data-reveal>Get in Touch</p>
+    <h2 data-reveal>Send Brian a Message</h2>
+    <p class="contact__lead" data-reveal>A note about a book, a reading, or just to say hello.</p>
+
+    <form
+      class="contact__form"
+      name={formName}
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      data-contact-form
+      data-reveal
+    >
+      <input type="hidden" name="form-name" value={formName} />
+      <p class="contact__hp"><label>Leave blank: <input name="bot-field" /></label></p>
+      <div class="contact__row">
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="email" name="email" placeholder="Your email" required />
+      </div>
+      <textarea name="message" rows="5" placeholder="Your message" required></textarea>
+      <button type="submit" class="btn">Send Message</button>
+      <p class="contact__status" data-contact-status aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact__inner { text-align: center; }
+  .contact__lead { color: var(--muted); max-width: 520px; margin: 0 auto 28px; }
+  .contact__form { max-width: 600px; margin: 0 auto; text-align: left; }
+  .contact__hp { display: none; }
+  .contact__row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .contact__form input,
+  .contact__form textarea {
+    width: 100%; background: #fff; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 13px 14px; font: 400 1rem "EB Garamond", serif; resize: vertical;
+  }
+  .contact__form input::placeholder, .contact__form textarea::placeholder { color: #9a8f7d; }
+  .contact__form input:focus, .contact__form textarea:focus { outline: none; border-color: var(--gold); }
+  .contact__form textarea { margin-bottom: 16px; }
+  .contact__form .btn { border: none; cursor: pointer; }
+  .contact__status { color: var(--gold); font-size: 0.95rem; min-height: 1.2em; margin: 12px 0 0; }
+  @media (max-width: 560px) { .contact__row { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  // Progressive enhancement: submit to Netlify Forms via fetch for inline status.
+  const form = document.querySelector('[data-contact-form]');
+  const status = document.querySelector('[data-contact-status]');
+  if (form && status) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form as HTMLFormElement);
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(data as any).toString(),
+        });
+        if (res.ok) {
+          (form as HTMLFormElement).reset();
+          status.textContent = 'Thank you — your message has been sent.';
+        } else {
+          status.textContent = 'Something went wrong. Please try again.';
+        }
+      } catch {
+        status.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+  }
+</script>
