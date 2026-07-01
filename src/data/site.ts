@@ -1,8 +1,8 @@
 export const site = {
   name: "Brian Baleno",
-  tagline: "Stories of family, faith, and the roads that shape us.",
+  tagline: "I write about family, and the lessons that last.",
   intro:
-    "Pittsburgh-born author of novels and memoirs closest to the heart.",
+    "A Pittsburgh-born writer of novels and memoirs — stories drawn from family, and the values that raised me.",
   email: "brianbaleno9@gmail.com",
   emailHref: "mailto:brianbaleno9@gmail.com",
   headshot: "/images/brian.jpg", // added in Task 2
