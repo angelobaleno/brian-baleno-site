@@ -1,28 +1,18 @@
 ---
 import { site } from '../data/site.ts';
-const formName = site.contactFormName;
 ---
 <section class="section contact" id="contact">
   <div class="container contact__inner">
     <p class="kicker" data-reveal>Get in Touch</p>
-    <h2 data-reveal>Send Brian a Message</h2>
+    <h2 data-reveal>I'd love to hear from you.</h2>
     <p class="contact__lead" data-reveal>A note about a book, a reading, or just to say hello.</p>
 
-    <form
-      class="contact__form"
-      name={formName}
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      data-contact-form
-      data-reveal
-    >
-      <input type="hidden" name="form-name" value={formName} />
-      <p class="contact__hp"><label>Leave blank: <input name="bot-field" /></label></p>
+    <form class="contact__form" data-contact-form data-email={site.email} data-reveal>
       <div class="contact__row">
         <input type="text" name="name" placeholder="Your name" aria-label="Your name" required />
         <input type="email" name="email" placeholder="Your email" aria-label="Your email" required />
       </div>
+      <input type="tel" name="phone" placeholder="Your phone (optional)" aria-label="Your phone (optional)" />
       <textarea name="message" rows="5" placeholder="Your message" aria-label="Your message" required></textarea>
       <button type="submit" class="btn">Send Message</button>
       <p class="contact__status" data-contact-status aria-live="polite"></p>
@@ -34,7 +24,6 @@ const formName = site.contactFormName;
   .contact__inner { text-align: center; }
   .contact__lead { color: var(--muted); max-width: 520px; margin: 0 auto 28px; }
   .contact__form { max-width: 600px; margin: 0 auto; text-align: left; }
-  .contact__hp { display: none; }
   .contact__row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .contact__form input,
   .contact__form textarea {
@@ -42,6 +31,7 @@ const formName = site.contactFormName;
     border: 1px solid var(--line); border-radius: 6px;
     padding: 13px 14px; font: 400 1rem "EB Garamond", serif; resize: vertical;
   }
+  .contact__form input[type="tel"] { margin-bottom: 14px; }
   .contact__form input::placeholder, .contact__form textarea::placeholder { color: #9a8f7d; }
   .contact__form input:focus, .contact__form textarea:focus { outline: none; border-color: var(--gold); }
   .contact__form textarea { margin-bottom: 16px; }
@@ -51,29 +41,26 @@ const formName = site.contactFormName;
 </style>
 
 <script>
-  // Progressive enhancement: submit to Netlify Forms via fetch for inline status.
+  // Static-host friendly: compose the message into the visitor's email app
+  // (GitHub Pages can't process a form server-side).
   const form = document.querySelector('[data-contact-form]');
   const status = document.querySelector('[data-contact-status]');
-  if (form && status) {
-    form.addEventListener('submit', async (e) => {
+  if (form instanceof HTMLFormElement && status) {
+    const email = form.dataset.email ?? '';
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const data = new FormData(form as HTMLFormElement);
-      status.textContent = 'Sending…';
-      try {
-        const res = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(data as any).toString(),
-        });
-        if (res.ok) {
-          (form as HTMLFormElement).reset();
-          status.textContent = 'Thank you — your message has been sent.';
-        } else {
-          status.textContent = 'Something went wrong. Please try again.';
-        }
-      } catch {
-        status.textContent = 'Something went wrong. Please try again.';
-      }
+      const data = new FormData(form);
+      const name = String(data.get('name') ?? '');
+      const from = String(data.get('email') ?? '');
+      const phone = String(data.get('phone') ?? '');
+      const message = String(data.get('message') ?? '');
+      const subject = `Website message from ${name || 'a reader'}`;
+      const lines = [`Name: ${name}`, `Email: ${from}`];
+      if (phone) lines.push(`Phone: ${phone}`);
+      lines.push('', message);
+      window.location.href =
+        `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      status.textContent = 'Opening your email app…';
     });
   }
 </script>

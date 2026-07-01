@@ -1,11 +1,12 @@
 ---
 import { books } from '../data/books.ts';
+import { withBase } from '../lib/url.ts';
 const featured = books.find((b) => b.featured) ?? books[0];
 ---
 <section class="section section--alt featured">
   <div class="container featured__inner">
-    <a class="featured__cover" href={`/books/${featured.slug}`} data-reveal>
-      <img src={featured.cover} alt={`Cover of ${featured.title}`} width="360" height="540" />
+    <a class="featured__cover" href={withBase(`/books/${featured.slug}`)} data-reveal>
+      <img src={withBase(featured.cover)} alt={`Cover of ${featured.title}`} width="360" height="540" />
     </a>
     <div class="featured__body" data-reveal>
       <p class="kicker">New Release</p>
@@ -13,7 +14,7 @@ const featured = books.find((b) => b.featured) ?? books[0];
       <p class="featured__blurb">{featured.blurb}</p>
       <div class="featured__cta">
         <a class="btn" href={featured.amazonUrl} target="_blank" rel="noopener">Order Now</a>
-        <a class="btn btn--ghost" href={`/books/${featured.slug}`}>Read More</a>
+        <a class="btn btn--ghost" href={withBase(`/books/${featured.slug}`)}>Read More</a>
       </div>
     </div>
   </div>

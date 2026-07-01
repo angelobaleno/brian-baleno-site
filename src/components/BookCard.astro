@@ -1,10 +1,11 @@
 ---
 import type { Book } from '../data/books.ts';
+import { withBase } from '../lib/url.ts';
 const { book } = Astro.props as { book: Book };
 ---
-<a class="card" href={`/books/${book.slug}`} data-reveal>
+<a class="card" href={withBase(`/books/${book.slug}`)} data-reveal>
   <div class="card__cover">
-    <img src={book.cover} alt={`Cover of ${book.title}`} width="240" height="360" loading="lazy" />
+    <img src={withBase(book.cover)} alt={`Cover of ${book.title}`} width="240" height="360" loading="lazy" />
   </div>
   <h3 class="card__title">{book.title}</h3>
   <p class="card__blurb">{book.blurb}</p>

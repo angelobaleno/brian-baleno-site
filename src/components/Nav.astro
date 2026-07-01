@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site.ts';
+import { withBase } from '../lib/url.ts';
 const links = [
   { label: 'Books', href: '/#books' },
   { label: 'About', href: '/#about' },
@@ -8,9 +9,9 @@ const links = [
 ---
 <header class="nav">
   <div class="container nav__inner">
-    <a class="nav__brand" href="/">{site.name}</a>
+    <a class="nav__brand" href={withBase('/')}>{site.name}</a>
     <nav class="nav__links">
-      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      {links.map((l) => <a href={withBase(l.href)}>{l.label}</a>)}
     </nav>
   </div>
 </header>

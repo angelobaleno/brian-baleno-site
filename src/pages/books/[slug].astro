@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { books } from '../../data/books.ts';
+import { withBase } from '../../lib/url.ts';
 
 export function getStaticPaths() {
   return books.map((book) => ({ params: { slug: book.slug }, props: { book } }));
@@ -12,10 +13,10 @@ const { book } = Astro.props;
   <article class="section book">
     <div class="container book__inner">
       <div class="book__cover" data-reveal>
-        <img src={book.cover} alt={`Cover of ${book.title}`} width="380" height="570" />
+        <img src={withBase(book.cover)} alt={`Cover of ${book.title}`} width="380" height="570" />
       </div>
       <div class="book__body" data-reveal>
-        <a class="book__back" href="/#books">← All Books</a>
+        <a class="book__back" href={withBase('/#books')}>← All Books</a>
         <h1>{book.title}</h1>
         <div class="book__desc" set:html={book.description}></div>
         <a class="btn" href={book.amazonUrl} target="_blank" rel="noopener">Order on Amazon</a>

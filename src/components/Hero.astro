@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site.ts';
+import { withBase } from '../lib/url.ts';
 ---
 <section class="hero">
   <div class="container hero__inner">
@@ -7,8 +8,8 @@ import { site } from '../data/site.ts';
     <h1 data-reveal>{site.tagline}</h1>
     <p class="hero__lead" data-reveal>{site.intro}</p>
     <div class="hero__cta" data-reveal>
-      <a class="btn" href="/#books">Browse the Books</a>
-      <a class="btn btn--ghost" href="/#about">About Brian</a>
+      <a class="btn" href={withBase('/#books')}>Browse the Books</a>
+      <a class="btn btn--ghost" href={withBase('/#about')}>About Brian</a>
     </div>
   </div>
 </section>

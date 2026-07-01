@@ -1,7 +1,9 @@
 import { defineConfig } from 'astro/config';
 
-// Build-to-pitch prototype. Deployed to a free Netlify preview subdomain.
-// When (if) Brian adopts it, set `site` to https://www.brianbaleno.com.
+// Deployed to GitHub Pages as a project site (served under /brian-baleno-site/),
+// the same setup as the Webb's site. When Brian adopts it on his own domain,
+// set `site` to that domain and drop `base`.
 export default defineConfig({
-  site: 'https://brian-baleno.netlify.app',
+  site: 'https://angelobaleno.github.io',
+  base: '/brian-baleno-site',
 });
