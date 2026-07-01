@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site.ts';
+---
+<section class="hero">
+  <div class="container hero__inner">
+    <p class="kicker" data-reveal>Author · Pittsburgh</p>
+    <h1 data-reveal>{site.tagline}</h1>
+    <p class="hero__lead" data-reveal>{site.intro}</p>
+    <div class="hero__cta" data-reveal>
+      <a class="btn" href="/#books">Browse the Books</a>
+      <a class="btn btn--ghost" href="/#about">About Brian</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { padding: 92px 0 72px; }
+  .hero__inner { max-width: 760px; }
+  .hero__lead { font-size: 1.25rem; color: var(--ink-soft); max-width: 46ch; margin: 6px 0 30px; }
+  .hero__cta { display: flex; gap: 14px; flex-wrap: wrap; }
+</style>

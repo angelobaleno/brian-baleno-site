@@ -1,0 +1,35 @@
+---
+import { books } from '../data/books.ts';
+const featured = books.find((b) => b.featured) ?? books[0];
+---
+<section class="section section--alt featured">
+  <div class="container featured__inner">
+    <a class="featured__cover" href={`/books/${featured.slug}`} data-reveal>
+      <img src={featured.cover} alt={`Cover of ${featured.title}`} width="360" height="540" />
+    </a>
+    <div class="featured__body" data-reveal>
+      <p class="kicker">New Release</p>
+      <h2>{featured.title}</h2>
+      <p class="featured__blurb">{featured.blurb}</p>
+      <div class="featured__cta">
+        <a class="btn" href={featured.amazonUrl} target="_blank" rel="noopener">Order Now</a>
+        <a class="btn btn--ghost" href={`/books/${featured.slug}`}>Read More</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured__inner { display: grid; grid-template-columns: 360px 1fr; gap: 54px; align-items: center; }
+  .featured__cover img {
+    border-radius: 4px; box-shadow: 0 22px 50px rgba(44,38,32,0.28);
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .featured__cover:hover img { transform: translateY(-6px); box-shadow: 0 28px 60px rgba(44,38,32,0.34); }
+  .featured__blurb { font-size: 1.2rem; color: var(--ink-soft); max-width: 44ch; margin: 4px 0 26px; }
+  .featured__cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  @media (max-width: 820px) {
+    .featured__inner { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 30px; }
+    .featured__cover img { width: 260px; height: auto; }
+  }
+</style>
