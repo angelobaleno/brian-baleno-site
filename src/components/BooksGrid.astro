@@ -1,36 +1,105 @@
 ---
-import { books, categoryOrder, categoryLabels } from '../data/books.ts';
+import { books, categoryOrder } from '../data/books.ts';
 import BookCard from './BookCard.astro';
+
+const shortLabels: Record<string, string> = {
+  fiction: 'Fiction',
+  memoir: 'Memoirs',
+  children: 'Young Readers',
+};
+const filters = [
+  { key: 'all', label: 'All Books' },
+  ...categoryOrder
+    .filter((cat) => books.some((b) => b.category === cat))
+    .map((cat) => ({ key: cat, label: shortLabels[cat] ?? cat })),
+];
 ---
 <section class="section" id="books">
   <div class="container">
     <p class="kicker" data-reveal>The Library</p>
     <h2 data-reveal>Books by Brian Baleno</h2>
-    {categoryOrder.map((cat) => {
-      const inCat = books.filter((b) => b.category === cat);
-      if (inCat.length === 0) return null;
-      return (
-        <div class="books__group">
-          <h3 class="books__cat" data-reveal>{categoryLabels[cat]}</h3>
-          <div class="books__grid">
-            {inCat.map((book) => <BookCard book={book} />)}
-          </div>
+
+    <div class="books__filters" role="group" aria-label="Filter books by category" data-reveal>
+      {filters.map((f, i) => (
+        <button
+          class:list={['books__filter', { 'is-active': i === 0 }]}
+          data-filter={f.key}
+          type="button"
+          aria-pressed={i === 0 ? 'true' : 'false'}
+        >{f.label}</button>
+      ))}
+    </div>
+
+    <div class="books__grid" data-books-grid>
+      {books.map((book) => (
+        <div class="books__item" data-category={book.category}>
+          <BookCard book={book} />
         </div>
-      );
-    })}
+      ))}
+    </div>
   </div>
 </section>
 
 <style>
-  .books__group { margin-top: 48px; }
-  .books__cat {
-    font-family: "Archivo", sans-serif; font-size: 0.8rem; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--gold); border-bottom: 1px solid var(--line);
-    padding-bottom: 12px; margin-bottom: 30px;
+  .books__filters {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin: 30px 0 40px; padding-bottom: 26px;
+    border-bottom: 1px solid var(--line);
   }
+  .books__filter {
+    font-family: "Archivo", sans-serif; font-size: 0.76rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    background: transparent; border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 18px; cursor: pointer;
+    transition: color .14s ease, background .14s ease, border-color .14s ease;
+  }
+  .books__filter:hover { color: var(--ink); border-color: var(--gold); }
+  .books__filter.is-active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .books__grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px 34px;
+    transition: opacity .26s ease, transform .26s ease;
+  }
+  .books__grid.is-switching { opacity: 0; transform: translateY(8px); }
+  @media (prefers-reduced-motion: reduce) {
+    .books__grid { transition: none; }
+    .books__grid.is-switching { opacity: 1; transform: none; }
   }
   @media (max-width: 900px) { .books__grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 620px) { .books__grid { grid-template-columns: repeat(2, 1fr); gap: 30px 22px; } }
 </style>
+
+<script>
+  const grid = document.querySelector('[data-books-grid]');
+  const buttons = Array.from(document.querySelectorAll<HTMLElement>('.books__filter'));
+  if (grid && buttons.length) {
+    const items = Array.from(grid.querySelectorAll<HTMLElement>('.books__item'));
+    const apply = (key: string) => {
+      items.forEach((item) => {
+        const show = key === 'all' || item.dataset.category === key;
+        item.style.display = show ? '' : 'none';
+        // Force any scroll-reveal targets visible so filtered-in cards never stay hidden.
+        if (show) {
+          item.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in-view'));
+        }
+      });
+    };
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('is-active')) return;
+        buttons.forEach((b) => {
+          b.classList.toggle('is-active', b === btn);
+          b.setAttribute('aria-pressed', String(b === btn));
+        });
+        const key = btn.dataset.filter ?? 'all';
+        if (reduceMotion) { apply(key); return; }
+        // Crossfade: fade out, swap which books show while invisible, fade back in.
+        grid.classList.add('is-switching');
+        window.setTimeout(() => {
+          apply(key);
+          requestAnimationFrame(() => grid.classList.remove('is-switching'));
+        }, 260);
+      });
+    });
+  }
+</script>
