@@ -1,0 +1,20 @@
+---
+import type { Book } from '../data/books.ts';
+const { book } = Astro.props as { book: Book };
+---
+<a class="card" href={`/books/${book.slug}`} data-reveal>
+  <div class="card__cover">
+    <img src={book.cover} alt={`Cover of ${book.title}`} width="240" height="360" loading="lazy" />
+  </div>
+  <h3 class="card__title">{book.title}</h3>
+  <p class="card__blurb">{book.blurb}</p>
+</a>
+
+<style>
+  .card { display: block; }
+  .card__cover { overflow: hidden; border-radius: 4px; box-shadow: 0 12px 30px rgba(44,38,32,0.2); }
+  .card__cover img { width: 100%; height: auto; transition: transform .35s ease; }
+  .card:hover .card__cover img { transform: scale(1.04); }
+  .card__title { margin: 16px 0 6px; font-size: 1.2rem; }
+  .card__blurb { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.5; }
+</style>

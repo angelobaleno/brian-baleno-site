@@ -1,0 +1,36 @@
+---
+import { books, categoryOrder, categoryLabels } from '../data/books.ts';
+import BookCard from './BookCard.astro';
+---
+<section class="section" id="books">
+  <div class="container">
+    <p class="kicker" data-reveal>The Library</p>
+    <h2 data-reveal>Books by Brian Baleno</h2>
+    {categoryOrder.map((cat) => {
+      const inCat = books.filter((b) => b.category === cat);
+      if (inCat.length === 0) return null;
+      return (
+        <div class="books__group">
+          <h3 class="books__cat" data-reveal>{categoryLabels[cat]}</h3>
+          <div class="books__grid">
+            {inCat.map((book) => <BookCard book={book} />)}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+<style>
+  .books__group { margin-top: 48px; }
+  .books__cat {
+    font-family: "Archivo", sans-serif; font-size: 0.8rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold); border-bottom: 1px solid var(--line);
+    padding-bottom: 12px; margin-bottom: 30px;
+  }
+  .books__grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px 34px;
+  }
+  @media (max-width: 900px) { .books__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 620px) { .books__grid { grid-template-columns: repeat(2, 1fr); gap: 30px 22px; } }
+</style>
