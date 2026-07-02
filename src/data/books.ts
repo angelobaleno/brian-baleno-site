@@ -11,15 +11,11 @@ export interface Book {
   coverWidth: number;
   coverHeight: number;
   amazonUrl: string;
+  /** ISO publication date (YYYY-MM-DD) — drives the Newest / Oldest sort. */
+  published: string;
   featured?: boolean;
 }
 
-export const categoryOrder: BookCategory[] = ['fiction', 'memoir', 'children'];
-export const categoryLabels: Record<BookCategory, string> = {
-  fiction: 'Fiction',
-  memoir: 'Memoirs',
-  children: 'Young Readers',
-};
 // Singular form, used as the kicker on each book's page.
 export const categoryKickers: Record<BookCategory, string> = {
   fiction: 'A Novel',
@@ -28,6 +24,21 @@ export const categoryKickers: Record<BookCategory, string> = {
 };
 
 export const books: Book[] = [
+  {
+    slug: 'barside-manner',
+    title: 'Barside Manner',
+    category: 'fiction',
+    blurb:
+      'In an Oakmont tavern outside Pittsburgh, a young bartender watches a cast of unlikely regulars become an even more unlikely family.',
+    description:
+      "Every bar has its regulars. Not every bar has Enzo, Spike, Edward, Bob, and Jan. Set in an Oakmont tavern just outside Pittsburgh, Barside Manner follows Freddy, a young bartender with an instinct for listening and a gift for reading people. Night after night, he watches a cast of unlikely characters pull up their stools—a second-generation Italian mason, a tough construction worker, a white-collar Fox Chapel businessman, and a sharp-tongued retired couple who coordinate their outfits and finish each other's sentences. They share almost nothing in common. Somehow, they've become family. But behind every round of drinks and every wise remark traded across the bar top, real life is unfolding. Illness. Sacrifice. Old grudges quietly buried. Love found in unexpected places. And for Freddy, a decision that will change everything. Barside Manner is a warm, wry, and quietly moving story about the unlikely bonds formed in a place where everyone eventually lets their guard down. Because sometimes the person who knows you best isn't your doctor, lawyer, or oldest friend. It's your bartender.",
+    cover: '/images/covers/barside-manner.jpg',
+    coverWidth: 985,
+    coverHeight: 1500,
+    amazonUrl: 'https://www.amazon.com/Barside-Manner-Brian-Baleno/dp/B0H777CLSK',
+    published: '2026-07-01',
+    featured: true,
+  },
   {
     slug: 'our-own-authors',
     title: 'Our Own Authors',
@@ -40,7 +51,7 @@ export const books: Book[] = [
     coverWidth: 800,
     coverHeight: 1200,
     amazonUrl: 'https://www.amazon.com/dp/B0DNMVK13L',
-    featured: true,
+    published: '2024-11-19',
   },
   {
     slug: 'lifes-fingerprints',
@@ -54,6 +65,7 @@ export const books: Book[] = [
     coverWidth: 800,
     coverHeight: 1200,
     amazonUrl: 'https://www.amazon.com/Lifes-Fingerprints-Brian-Baleno/dp/B0CWGMTFW2',
+    published: '2024-02-25',
   },
   {
     slug: 'adjacent-others',
@@ -67,6 +79,7 @@ export const books: Book[] = [
     coverWidth: 800,
     coverHeight: 1219,
     amazonUrl: 'https://www.amazon.com/Adjacent-Others-Brian-Baleno/dp/B0BXNFVS3D',
+    published: '2023-03-12',
   },
   {
     slug: 'insignificant-ones',
@@ -80,6 +93,7 @@ export const books: Book[] = [
     coverWidth: 314,
     coverHeight: 500,
     amazonUrl: 'https://www.amazon.com/dp/B099TSBXYQ',
+    published: '2021-07-19',
   },
   {
     slug: 'plus-one',
@@ -93,6 +107,7 @@ export const books: Book[] = [
     coverWidth: 328,
     coverHeight: 499,
     amazonUrl: 'https://www.amazon.com/One-Brian-Baleno/dp/061552432X',
+    published: '2012-02-17',
   },
   {
     slug: 'route-66-with-grandpap',
@@ -105,6 +120,7 @@ export const books: Book[] = [
     coverWidth: 800,
     coverHeight: 1280,
     amazonUrl: 'https://www.amazon.com/Route-66-Grandpap-Brian-Baleno/dp/B0BD2CQKZY',
+    published: '2022-09-08',
   },
   {
     slug: 'moms-enduring-faith-love',
@@ -118,6 +134,7 @@ export const books: Book[] = [
     coverWidth: 800,
     coverHeight: 1200,
     amazonUrl: 'https://www.amazon.com/Moms-Enduring-Faith-Brian-Baleno/dp/B09ZCKK4DX',
+    published: '2022-05-02',
   },
   {
     slug: 'generational-lessons-from-dad',
@@ -131,6 +148,7 @@ export const books: Book[] = [
     coverWidth: 333,
     coverHeight: 499,
     amazonUrl: 'https://www.amazon.com/Generational-Lessons-Dad-Brian-Baleno/dp/B08DSYRT5P',
+    published: '2020-07-28',
   },
   {
     slug: 'fifty-halfs-from-first-to-last',
@@ -144,6 +162,7 @@ export const books: Book[] = [
     coverWidth: 333,
     coverHeight: 499,
     amazonUrl: 'https://www.amazon.com/Halfs-First-Last-Brian-Baleno/dp/149528087X',
+    published: '2014-01-03',
   },
   {
     slug: 'what-makes-cars-go-vroom',
@@ -156,5 +175,6 @@ export const books: Book[] = [
     coverWidth: 218,
     coverHeight: 218,
     amazonUrl: 'https://www.amazon.com/What-Makes-Cars-Go-Vroom/dp/1976708885',
+    published: '2017-12-21',
   },
 ];

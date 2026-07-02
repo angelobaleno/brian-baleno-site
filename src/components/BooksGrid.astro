@@ -1,33 +1,45 @@
 ---
-import { books, categoryOrder, categoryLabels } from '../data/books.ts';
+import { books } from '../data/books.ts';
 import BookCard from './BookCard.astro';
 
-const filters = [
-  { key: 'all', label: 'All Books' },
-  ...categoryOrder
-    .filter((cat) => books.some((b) => b.category === cat))
-    .map((cat) => ({ key: cat, label: categoryLabels[cat] })),
+const sorts = [
+  { key: 'newest', label: 'Newest' },
+  { key: 'oldest', label: 'Oldest' },
+  { key: 'title', label: 'Title A–Z' },
 ];
+
+// Render newest-first by default so the no-JS view matches the default sort.
+const initial = [...books].sort((a, b) => b.published.localeCompare(a.published));
+
+// Ignore a leading non-letter (e.g. the "+" in "+One") when sorting by title.
+const titleKey = (t: string) => t.replace(/^[^a-z0-9]+/i, '').toLowerCase();
 ---
 <section class="section" id="books">
   <div class="container">
     <p class="kicker" data-reveal>The Library</p>
     <h2 data-reveal>Books by Brian Baleno</h2>
 
-    <div class="books__filters" role="group" aria-label="Filter books by category" data-reveal>
-      {filters.map((f, i) => (
-        <button
-          class:list={['books__filter', { 'is-active': i === 0 }]}
-          data-filter={f.key}
-          type="button"
-          aria-pressed={i === 0 ? 'true' : 'false'}
-        >{f.label}</button>
-      ))}
+    <div class="books__sort" data-reveal>
+      <span class="books__sort-label" id="sort-label">Sort</span>
+      <div class="books__sort-pills" role="group" aria-labelledby="sort-label">
+        {sorts.map((s, i) => (
+          <button
+            class:list={['books__filter', { 'is-active': i === 0 }]}
+            data-sort={s.key}
+            type="button"
+            aria-pressed={i === 0 ? 'true' : 'false'}
+          >{s.label}</button>
+        ))}
+      </div>
     </div>
 
     <div class="books__grid" data-books-grid>
-      {books.map((book) => (
-        <div class="books__item" data-category={book.category}>
+      {initial.map((book) => (
+        <div
+          class="books__item"
+          data-title={titleKey(book.title)}
+          data-published={book.published}
+        >
           <BookCard book={book} />
         </div>
       ))}
@@ -36,11 +48,16 @@ const filters = [
 </section>
 
 <style>
-  .books__filters {
-    display: flex; flex-wrap: wrap; gap: 10px;
+  .books__sort {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px;
     margin: 30px 0 40px; padding-bottom: 26px;
     border-bottom: 1px solid var(--line);
   }
+  .books__sort-label {
+    font-family: "Archivo", sans-serif; font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); margin-right: 4px;
+  }
+  .books__sort-pills { display: flex; flex-wrap: wrap; gap: 10px; }
   .books__filter {
     font-family: "Archivo", sans-serif; font-size: 0.76rem; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--muted);
@@ -64,20 +81,24 @@ const filters = [
 </style>
 
 <script>
-  const grid = document.querySelector('[data-books-grid]');
+  const grid = document.querySelector<HTMLElement>('[data-books-grid]');
   const buttons = Array.from(document.querySelectorAll<HTMLElement>('.books__filter'));
   if (grid && buttons.length) {
     const items = Array.from(grid.querySelectorAll<HTMLElement>('.books__item'));
-    const apply = (key: string) => {
-      items.forEach((item) => {
-        const show = key === 'all' || item.dataset.category === key;
-        item.style.display = show ? '' : 'none';
-        // Force any scroll-reveal targets visible so filtered-in cards never stay hidden.
-        if (show) {
-          item.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in-view'));
-        }
-      });
+    const str = (el: HTMLElement, key: string) => el.dataset[key] ?? '';
+
+    const comparators: Record<string, (a: HTMLElement, b: HTMLElement) => number> = {
+      newest: (a, b) => str(b, 'published').localeCompare(str(a, 'published')),
+      oldest: (a, b) => str(a, 'published').localeCompare(str(b, 'published')),
+      title: (a, b) => str(a, 'title').localeCompare(str(b, 'title')),
     };
+
+    const apply = (key: string) => {
+      const cmp = comparators[key] ?? comparators.newest;
+      // Reorder in place — appending an existing node moves it to the end.
+      [...items].sort(cmp).forEach((item) => grid.appendChild(item));
+    };
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -86,9 +107,9 @@ const filters = [
           b.classList.toggle('is-active', b === btn);
           b.setAttribute('aria-pressed', String(b === btn));
         });
-        const key = btn.dataset.filter ?? 'all';
+        const key = btn.dataset.sort ?? 'newest';
         if (reduceMotion) { apply(key); return; }
-        // Crossfade: fade out, swap which books show while invisible, fade back in.
+        // Crossfade: fade out, reorder while invisible, fade back in.
         grid.classList.add('is-switching');
         window.setTimeout(() => {
           apply(key);
