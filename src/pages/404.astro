@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { withBase } from '../lib/url.ts';
+---
+<Base title="Page not found — Brian Baleno" description="That page doesn't exist.">
+  <section class="section notfound">
+    <div class="container">
+      <p class="kicker">Page not found</p>
+      <h1>This page seems to be missing.</h1>
+      <p class="notfound__lead">The address may have changed. Everything worth reading is back on the main page.</p>
+      <a class="btn" href={withBase('/')}>Back to the Books</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound { min-height: 55vh; }
+  .notfound__lead { color: var(--ink-soft); font-size: 1.15rem; max-width: 46ch; margin: 6px 0 30px; }
+</style>

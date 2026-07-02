@@ -10,7 +10,7 @@ const links = [
 <header class="nav">
   <div class="container nav__inner">
     <a class="nav__brand" href={withBase('/')}>{site.name}</a>
-    <nav class="nav__links">
+    <nav class="nav__links" aria-label="Primary">
       {links.map((l) => <a href={withBase(l.href)}>{l.label}</a>)}
     </nav>
   </div>
@@ -24,21 +24,30 @@ const links = [
     border-bottom: 1px solid var(--line);
   }
   .nav__inner { display: flex; align-items: center; justify-content: space-between; height: 76px; }
-  .nav__brand { font-family: "Fraunces", serif; font-weight: 600; font-size: 1.35rem; letter-spacing: 0.01em; }
-  .nav__links { display: flex; gap: 30px; }
+  .nav__brand {
+    font-family: "Fraunces", serif; font-weight: 600; font-size: 1.35rem; letter-spacing: 0.01em;
+    transition: color .14s ease;
+  }
+  .nav__brand:hover { color: var(--bronze); }
+  .nav__links { display: flex; gap: 8px; }
   .nav__links a {
     font-family: "Archivo", system-ui, sans-serif;
     font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); transition: color .14s ease;
+    color: var(--muted); padding: 12px 11px;
+    background-image: linear-gradient(var(--gold), var(--gold));
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-position: 11px calc(100% - 8px);
+    transition: color .14s ease, background-size .22s ease;
   }
-  .nav__links a:hover { color: var(--gold); }
+  .nav__links a:hover { color: var(--bronze); background-size: calc(100% - 22px) 1px; }
   @media (max-width: 560px) {
-    .nav__links { gap: 18px; }
-    .nav__links a { font-size: 0.74rem; letter-spacing: 0.06em; }
+    .nav__links a { font-size: 0.74rem; letter-spacing: 0.06em; padding: 12px 8px; background-position: 8px calc(100% - 8px); }
+    .nav__links a:hover { background-size: calc(100% - 16px) 1px; }
   }
   @media (max-width: 400px) {
     .nav__brand { font-size: 1.05rem; }
-    .nav__links { gap: 12px; }
-    .nav__links a { font-size: 0.64rem; letter-spacing: 0.03em; }
+    .nav__links { gap: 2px; }
+    .nav__links a { font-size: 0.68rem; letter-spacing: 0.04em; }
   }
 </style>

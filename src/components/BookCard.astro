@@ -5,7 +5,7 @@ const { book } = Astro.props as { book: Book };
 ---
 <a class="card" href={withBase(`/books/${book.slug}`)} data-reveal>
   <div class="card__cover">
-    <img src={withBase(book.cover)} alt={`Cover of ${book.title}`} width="240" height="360" loading="lazy" />
+    <img src={withBase(book.cover)} alt={`Cover of ${book.title}`} loading="lazy" decoding="async" />
   </div>
   <h3 class="card__title">{book.title}</h3>
   <p class="card__blurb">{book.blurb}</p>
@@ -13,9 +13,28 @@ const { book } = Astro.props as { book: Book };
 
 <style>
   .card { display: block; }
-  .card__cover { overflow: hidden; border-radius: 4px; box-shadow: 0 12px 30px rgba(44,38,32,0.2); }
-  .card__cover img { width: 100%; height: auto; transition: transform .35s ease; }
-  .card:hover .card__cover img { transform: scale(1.04); }
-  .card__title { margin: 16px 0 6px; font-size: 1.2rem; }
+  /* A fixed 2:3 shelf slot: covers of any ratio sit on a common baseline,
+     so titles align across the row. */
+  .card__cover {
+    aspect-ratio: 2 / 3;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .card__cover img {
+    max-height: 100%;
+    width: auto;
+    max-width: 100%;
+    border-radius: 3px;
+    box-shadow: 0 12px 30px rgba(44, 38, 32, 0.2);
+    transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow .35s ease;
+  }
+  .card:hover .card__cover img,
+  .card:focus-visible .card__cover img {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(44, 38, 32, 0.28);
+  }
+  .card__title { margin: 16px 0 6px; font-size: 1.2rem; transition: color .14s ease; }
+  .card:hover .card__title { color: var(--bronze); }
   .card__blurb { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.5; }
 </style>

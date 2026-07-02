@@ -5,12 +5,13 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="container footer__inner">
     <span class="footer__brand">{site.name}</span>
+    <a class="footer__email text-link" href={site.emailHref}>{site.email}</a>
     {site.socials.length > 0 && (
-      <nav class="footer__social">
+      <nav class="footer__social" aria-label="Social profiles">
         {site.socials.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}
       </nav>
     )}
-    <span class="footer__copy">© {year} {site.name}</span>
+    <span class="footer__copy">&copy; {year} {site.name}</span>
   </div>
 </footer>
 
@@ -18,8 +19,9 @@ const year = new Date().getFullYear();
   .footer { border-top: 1px solid var(--line); padding: 34px 0; background: var(--paper-2); }
   .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .footer__brand { font-family: "Fraunces", serif; font-weight: 600; }
+  .footer__email { font-size: 0.95rem; color: var(--muted); }
   .footer__social { display: flex; gap: 20px; }
   .footer__social a { font-family: "Archivo", sans-serif; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  .footer__social a:hover { color: var(--gold); }
+  .footer__social a:hover { color: var(--bronze); }
   .footer__copy { font-size: 0.9rem; color: var(--muted); }
 </style>

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { books } from '../../data/books.ts';
+import { books, categoryKickers } from '../../data/books.ts';
+import { site } from '../../data/site.ts';
 import { withBase } from '../../lib/url.ts';
 
 export function getStaticPaths() {
@@ -8,36 +9,100 @@ export function getStaticPaths() {
 }
 
 const { book } = Astro.props;
+const index = books.findIndex((b) => b.slug === book.slug);
+const prev = books[(index - 1 + books.length) % books.length];
+const next = books[(index + 1) % books.length];
+
+const schema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Book',
+  name: book.title,
+  description: book.blurb,
+  image: new URL(withBase(book.cover), Astro.site).href,
+  url: new URL(Astro.url.pathname, Astro.site).href,
+  author: { '@type': 'Person', name: site.name },
+});
 ---
-<Base title={`${book.title} — Brian Baleno`} description={book.blurb}>
+<Base title={`${book.title} — Brian Baleno`} description={book.blurb} image={book.cover}>
+  <script type="application/ld+json" set:html={schema} slot="head" />
   <article class="section book">
     <div class="container book__inner">
       <div class="book__cover" data-reveal>
-        <img src={withBase(book.cover)} alt={`Cover of ${book.title}`} width="380" height="570" />
+        <img
+          src={withBase(book.cover)}
+          alt={`Cover of ${book.title}`}
+          width={book.coverWidth}
+          height={book.coverHeight}
+          fetchpriority="high"
+        />
       </div>
       <div class="book__body" data-reveal>
-        <a class="book__back" href={withBase('/#books')}>← All Books</a>
+        <a class="book__back" href={withBase('/#books')}>&larr; All Books</a>
+        <p class="kicker book__kicker">{categoryKickers[book.category]}</p>
         <h1>{book.title}</h1>
-        <div class="book__desc" set:html={book.description}></div>
-        <a class="btn" href={book.amazonUrl} target="_blank" rel="noopener">Order on Amazon</a>
+        <p class="book__desc">{book.description}</p>
+        <p class="endmark" aria-hidden="true">&#10087;</p>
+        <div class="book__cta">
+          <a class="btn" href={book.amazonUrl} target="_blank" rel="noopener">Order on Amazon</a>
+          <a class="btn btn--ghost" href={withBase('/#books')}>Browse the Library</a>
+        </div>
       </div>
     </div>
+
+    <nav class="container book__more" aria-label="More books">
+      <a class="book__more-link" href={withBase(`/books/${prev.slug}`)} rel="prev">
+        <span class="book__more-label">&larr; Previous</span>
+        <span class="book__more-title">{prev.title}</span>
+      </a>
+      <a class="book__more-link book__more-link--next" href={withBase(`/books/${next.slug}`)} rel="next">
+        <span class="book__more-label">Next &rarr;</span>
+        <span class="book__more-title">{next.title}</span>
+      </a>
+    </nav>
   </article>
 </Base>
 
 <style>
   .book__inner { display: grid; grid-template-columns: 380px 1fr; gap: 56px; align-items: start; }
-  .book__cover img { border-radius: 4px; box-shadow: 0 22px 50px rgba(44,38,32,0.28); position: sticky; top: 100px; }
+  .book__cover { display: flex; justify-content: center; }
+  /* Never upscale past the file's intrinsic size — small sources stay crisp. */
+  .book__cover img {
+    max-width: 100%; width: auto; height: auto;
+    border-radius: 4px; box-shadow: 0 22px 50px rgba(44,38,32,0.28);
+    position: sticky; top: 100px;
+  }
   .book__back {
     font-family: "Archivo", sans-serif; font-size: 0.78rem; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--muted);
+    display: inline-block; padding: 4px 0;
+    transition: color .14s ease;
   }
-  .book__back:hover { color: var(--gold); }
-  .book__body h1 { margin-top: 14px; }
-  .book__desc { font-size: 1.14rem; color: var(--ink-soft); line-height: 1.7; margin: 0 0 30px; }
-  .book__desc :global(p) { margin: 0 0 1em; }
+  .book__back:hover { color: var(--bronze); }
+  .book__kicker { margin-top: 26px; }
+  .book__desc { font-size: 1.14rem; color: var(--ink-soft); line-height: 1.7; max-width: 62ch; margin: 0; }
+  .book__cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
+
+  .book__more {
+    display: flex; justify-content: space-between; gap: 24px;
+    margin-top: 72px; padding-top: 30px;
+    border-top: 1px solid var(--line);
+  }
+  .book__more-link { display: flex; flex-direction: column; gap: 4px; max-width: 44%; }
+  .book__more-link--next { text-align: right; align-items: flex-end; }
+  .book__more-label {
+    font-family: "Archivo", sans-serif; font-size: 0.7rem;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .book__more-title {
+    font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 1.15rem;
+    transition: color .14s ease;
+  }
+  .book__more-link:hover .book__more-title { color: var(--bronze); }
+
   @media (max-width: 820px) {
-    .book__inner { grid-template-columns: 1fr; gap: 28px; justify-items: center; text-align: center; }
-    .book__cover img { position: static; width: 260px; height: auto; }
+    .book__inner { grid-template-columns: 1fr; gap: 32px; justify-items: center; }
+    .book__cover img { position: static; max-width: min(100%, 260px); }
+    .book__body { text-align: left; max-width: 62ch; }
+    .book__more { margin-top: 56px; }
   }
 </style>
